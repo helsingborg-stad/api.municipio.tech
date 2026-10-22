@@ -1,0 +1,76 @@
+name: Build Docker image
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Image tag (for example, v1.2.3 or 1.2.3-rc.1)'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: build-image-${{ inputs.tag }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out selected revision
+        uses: actions/checkout@v4
+
+      - name: Validate image tag and build secret
+        env:
+          IMAGE_TAG: ${{ inputs.tag }}
+          ACF_PRO_KEY: ${{ secrets.ACF_PRO_KEY }}
+        run: |
+          bash .docker/scripts/validate-image-tag.sh "$IMAGE_TAG"
+          if [ -z "$ACF_PRO_KEY" ]; then
+            echo 'ACF_PRO_KEY repository secret is required.' >&2
+            exit 1
+          fi
+
+      - name: Authenticate to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Refuse existing image tag
+        env:
+          IMAGE_TAG: ${{ inputs.tag }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: bash .docker/scripts/check-image-tag.sh
+
+      - name: Prepare tracked build context
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/image-context"
+          git archive HEAD | tar -x -C "$RUNNER_TEMP/image-context"
+          test -f "$RUNNER_TEMP/image-context/.docker/Dockerfile"
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and publish image
+        uses: docker/build-push-action@v6
+        env:
+          ACF_PRO_KEY: ${{ secrets.ACF_PRO_KEY }}
+        with:
+          context: ${{ runner.temp }}/image-context
+          file: ${{ runner.temp }}/image-context/.docker/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ghcr.io/helsingborg-stad/api.municipio.tech:${{ inputs.tag }}
+          secret-envs: |
+            acf_pro_key=ACF_PRO_KEY
