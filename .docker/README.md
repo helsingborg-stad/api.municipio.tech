@@ -125,11 +125,11 @@ Remove the containers, database, and uploaded files, allowing a completely fresh
 docker compose down --volumes
 ```
 
-## Publish an image manually
+## Publish an image
 
-Commit the `.docker/` directory, the root `.dockerignore`, and `.github/workflows/build-image.yml` to the repository's default branch so GitHub Actions can display the workflow. In the **Actions** tab, open **Build Docker image**, select **Run workflow**, choose the source branch or tag, and enter an image tag such as `v1.2.3` (or any valid Docker tag). The input is the *image* tag; the selected workflow revision supplies the source code. A tag does not automatically resolve to a corresponding source branch or Git tag.
+Commit the `.docker/` directory, the root `.dockerignore`, and `.github/workflows/build-image.yml` to the repository's default branch so GitHub Actions can display the workflow. Pushing a Git tag automatically builds that tagged revision and publishes an image with the same tag. Alternatively, in the **Actions** tab, open **Build Docker image**, select **Run workflow**, choose the source branch or tag, and enter an image tag such as `v1.2.3` (or any valid Docker tag). For manual runs, the input is the *image* tag; the selected workflow revision supplies the source code. A manual image tag does not automatically resolve to a corresponding source branch or Git tag.
 
-The workflow publishes `ghcr.io/helsingborg-stad/api.municipio.tech:<tag>` for `linux/amd64` and `linux/arm64`. It accepts 1-128 characters starting with a letter, digit, or underscore and containing only letters, digits, underscores, periods, or hyphens. It does not automatically add `latest` or other inferred tags. An existing GHCR tag fails the job rather than being overwritten.
+The workflow publishes `ghcr.io/helsingborg-stad/api.municipio.tech:<tag>` for `linux/amd64` and `linux/arm64`. Image tags (including pushed Git tags) must be 1-128 characters starting with a letter, digit, or underscore and containing only letters, digits, underscores, periods, or hyphens; other Git tags, such as those containing slashes, fail validation. It does not automatically add `latest` or other inferred tags. An existing GHCR tag fails the job rather than being overwritten.
 
 Configure the repository's `ACF_PRO_KEY` Actions secret. The workflow uses its built-in `GITHUB_TOKEN` with `contents: read` and `packages: write`; ensure Actions has permission to publish to the GHCR package (especially if the package already exists and is not linked to this repository). It sends the ACF key as a BuildKit secret, not a build argument or image layer. The workflow archives tracked files from the selected checkout, excluding local uploads, ignored configuration, and other untracked files from the published build context.
 

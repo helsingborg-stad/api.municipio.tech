@@ -1,6 +1,9 @@
 name: Build Docker image
 
 on:
+  push:
+    tags:
+      - '**'
   workflow_dispatch:
     inputs:
       tag:
@@ -12,8 +15,11 @@ permissions:
   contents: read
   packages: write
 
+env:
+  IMAGE_TAG: ${{ github.event_name == 'push' && github.ref_name || inputs.tag }}
+
 concurrency:
-  group: build-image-${{ inputs.tag }}
+  group: build-image-${{ github.event_name == 'push' && github.ref_name || inputs.tag }}
   cancel-in-progress: false
 
 jobs:
@@ -25,7 +31,6 @@ jobs:
 
       - name: Validate image tag and build secret
         env:
-          IMAGE_TAG: ${{ inputs.tag }}
           ACF_PRO_KEY: ${{ secrets.ACF_PRO_KEY }}
         run: |
           bash .docker/scripts/validate-image-tag.sh "$IMAGE_TAG"
@@ -43,7 +48,6 @@ jobs:
 
       - name: Refuse existing image tag
         env:
-          IMAGE_TAG: ${{ inputs.tag }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
         run: bash .docker/scripts/check-image-tag.sh
@@ -71,6 +75,6 @@ jobs:
           file: ${{ runner.temp }}/image-context/.docker/Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ghcr.io/helsingborg-stad/api.municipio.tech:${{ inputs.tag }}
+          tags: ghcr.io/helsingborg-stad/api.municipio.tech:${{ env.IMAGE_TAG }}
           secret-envs: |
             acf_pro_key=ACF_PRO_KEY

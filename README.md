@@ -29,6 +29,10 @@ This will ensure that deployments can be made by fetching the upstream of the fo
 2. Setup deployment details according to the tables below (source:  https://github.com/helsingborg-stad/municipio-deploy/tree/master/4.0).
 3. Update to upstream, whenever you want to update your production enviroment with the latest version of Municipio.
 
+## Docker image
+
+To publish a Docker image manually from the selected revision of this fork, use the [Build Docker image workflow](.github/workflows/build-image.yml). Enter an image tag (for example, `v1.2.3`); the workflow publishes both amd64 and arm64 variants to `ghcr.io/helsingborg-stad/api.municipio.tech` and refuses to replace an existing tag. Configure the `ACF_PRO_KEY` Actions secret first. See the [Docker guide](.docker/README.md) for local builds and the full publishing procedure.
+
 ## Adding custom dependencies
 You may add your own dependencies in the `composer.local.json` file. Add packages to the `require` or `require-dev` sections as needed. You can also add custom `repositories` entries (VCS, package, path, etc.) for packages that are not available on Packagist or wpackagist:
 
