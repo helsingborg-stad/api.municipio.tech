@@ -13,6 +13,7 @@
     "helsingborg-stad/wpmu-allow-cors": "1.0.0",
     "wp-plugin/acf-extended": "0.9.2.8",
     "wp-plugin/classic-editor": "1.7.0",
-    "wp-plugin/wp-rest-api-log": "1.7.3"
+    "wp-plugin/wp-rest-api-log": "1.7.3",
+    "helsingborg-stad/modularity-frontend-form": "0.84.6"
   }
 }
