@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "496daba983ce449a08209a86f7faee36",
+    "content-hash": "6e49dc30d478eede3cbc5300d28011be",
     "packages": [
         {
             "name": "adbario/php-dot-notation",
@@ -3502,16 +3502,16 @@
         },
         {
             "name": "helsingborg-stad/modularity-frontend-form",
-            "version": "0.84.6",
+            "version": "0.84.32",
             "source": {
                 "type": "git",
                 "url": "https://github.com/helsingborg-stad/modularity-frontend-form.git",
-                "reference": "009572378ee6d99c37b4c42b8952d1408c1f8858"
+                "reference": "7b31fc17383c8a3e0f5a6e8f80d327eed549ae87"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/helsingborg-stad/modularity-frontend-form/zipball/009572378ee6d99c37b4c42b8952d1408c1f8858",
-                "reference": "009572378ee6d99c37b4c42b8952d1408c1f8858",
+                "url": "https://api.github.com/repos/helsingborg-stad/modularity-frontend-form/zipball/7b31fc17383c8a3e0f5a6e8f80d327eed549ae87",
+                "reference": "7b31fc17383c8a3e0f5a6e8f80d327eed549ae87",
                 "shasum": ""
             },
             "require": {
@@ -3549,10 +3549,10 @@
             "description": "Frontend Form for Modularity.",
             "support": {
                 "issues": "https://github.com/helsingborg-stad/modularity-frontend-form/issues",
-                "source": "https://github.com/helsingborg-stad/modularity-frontend-form/tree/0.84.6"
+                "source": "https://github.com/helsingborg-stad/modularity-frontend-form/tree/0.84.32"
             },
-            "time": "2026-09-28T10:00:04+00:00",
-            "published-time": "2026-09-28T10:00:11+00:00"
+            "time": "2026-11-18T13:24:46+00:00",
+            "published-time": "2026-11-18T13:24:51+00:00"
         },
         {
             "name": "helsingborg-stad/modularity-guides",
