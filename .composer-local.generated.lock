@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6e49dc30d478eede3cbc5300d28011be",
+    "content-hash": "a6d883db060155c5ab774dbf2641187d",
     "packages": [
         {
             "name": "adbario/php-dot-notation",
@@ -2237,16 +2237,16 @@
         },
         {
             "name": "helsingborg-stad/api-schools-manager",
-            "version": "0.26.1",
+            "version": "0.26.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/helsingborg-stad/api-schools-manager.git",
-                "reference": "d8913b37110635e2f5204b93268a0e66cac2e7c8"
+                "reference": "38fbdad5a9db18fd20c75801da3d49e6a1ed38ce"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/helsingborg-stad/api-schools-manager/zipball/d8913b37110635e2f5204b93268a0e66cac2e7c8",
-                "reference": "d8913b37110635e2f5204b93268a0e66cac2e7c8",
+                "url": "https://api.github.com/repos/helsingborg-stad/api-schools-manager/zipball/38fbdad5a9db18fd20c75801da3d49e6a1ed38ce",
+                "reference": "38fbdad5a9db18fd20c75801da3d49e6a1ed38ce",
                 "shasum": ""
             },
             "require": {
@@ -2303,10 +2303,10 @@
             "description": "Creates a api that may be used to manage schools",
             "support": {
                 "issues": "https://github.com/helsingborg-stad/api-schools-manager/issues",
-                "source": "https://github.com/helsingborg-stad/api-schools-manager/tree/0.26.1"
+                "source": "https://github.com/helsingborg-stad/api-schools-manager/tree/0.26.2"
             },
-            "time": "2026-10-13T13:24:28+00:00",
-            "published-time": "2026-10-13T13:24:33+00:00"
+            "time": "2026-11-19T12:58:06+00:00",
+            "published-time": "2026-11-19T13:05:28+00:00"
         },
         {
             "name": "helsingborg-stad/api-sponsor-manager",
