@@ -3,7 +3,7 @@
   "license": "MIT",
   "description": "Additions specific to api.municipio.tech",
   "require": {
-    "helsingborg-stad/api-alarm-manager": "2.5.0",
+    "helsingborg-stad/api-alarm-manager": "2.5.1",
     "helsingborg-stad/api-event-manager": "3.19.1",
     "helsingborg-stad/api-exhibition-manager": "0.5.0",
     "helsingborg-stad/api-schools-manager": "0.26.2",
@@ -14,7 +14,6 @@
     "wp-plugin/acf-extended": "0.9.2.8",
     "wp-plugin/classic-editor": "1.7.0",
     "wp-plugin/wp-rest-api-log": "1.7.3",
-    "helsingborg-stad/modularity-frontend-form": "0.84.32",
-    "helsingborg-stad/municipio": "7.90.12"
+    "helsingborg-stad/modularity-frontend-form": "0.84.32"
   }
 }
