@@ -85,10 +85,104 @@ def inject_ols_env() -> None:
     OLS_CONF.write_text("".join(output))
 
 
+def _positive_int_env(name: str) -> int | None:
+    value = os.environ.get(name, "").strip()
+    if not value:
+        return None
+    if not value.isdigit() or int(value) < 1:
+        raise ValueError(f"{name} must be a positive integer, got {value!r}")
+    return int(value)
+
+
+def tune_ols() -> None:
+    """Apply optional OpenLiteSpeed tuning from the environment.
+
+    OLS_HTTPD_WORKERS         server-level httpdWorkers. OpenLiteSpeed otherwise
+                              sizes this from the node's CPU count, not the
+                              container's CPU limit, and every worker keeps its
+                              own connection pool to lsphp.
+    OLS_PHP_CHILDREN          lsphp maxConns and PHP_LSAPI_CHILDREN (kept equal).
+    OLS_PHP_KEEPALIVE_TIMEOUT lsphp pcKeepAliveTimeout, in seconds.
+    """
+    workers = _positive_int_env("OLS_HTTPD_WORKERS")
+    children = _positive_int_env("OLS_PHP_CHILDREN")
+    keepalive = _positive_int_env("OLS_PHP_KEEPALIVE_TIMEOUT")
+    if workers is None and children is None and keepalive is None:
+        return
+    if not OLS_CONF.is_file():
+        raise RuntimeError(f"OpenLiteSpeed tuning requested but {OLS_CONF} is missing")
+
+    block_settings: dict[str, str] = {}
+    if children is not None:
+        block_settings["maxConns"] = str(children)
+        block_settings["env PHP_LSAPI_CHILDREN"] = f"={children}"
+    if keepalive is not None:
+        block_settings["pcKeepAliveTimeout"] = str(keepalive)
+
+    def format_setting(key: str, value: str) -> str:
+        return f"    {key}{value}\n" if value.startswith("=") else f"    {key} {value}\n"
+
+    def setting_key(line: str) -> str | None:
+        stripped = line.strip()
+        for key in block_settings:
+            if key.startswith("env "):
+                if stripped.startswith(key + "="):
+                    return key
+            elif stripped == key or stripped.startswith(key + " ") or stripped.startswith(key + "\t"):
+                return key
+        return None
+
+    lines = OLS_CONF.read_text().splitlines(keepends=True)
+    output: list[str] = []
+    in_lsphp = False
+    found_lsphp = False
+    seen_in_block: set[str] = set()
+    workers_set = False
+
+    for line in lines:
+        stripped = line.strip()
+
+        if workers is not None and not in_lsphp and re.match(r"httpdWorkers(\s|$)", stripped):
+            output.append(f"httpdWorkers {workers}\n")
+            workers_set = True
+            continue
+
+        if "extProcessor lsphp{" in line:
+            in_lsphp = True
+            found_lsphp = True
+            output.append(line)
+            continue
+
+        if in_lsphp:
+            if stripped == "}":
+                for key, value in block_settings.items():
+                    if key not in seen_in_block:
+                        output.append(format_setting(key, value))
+                in_lsphp = False
+                output.append(line)
+                continue
+            key = setting_key(line)
+            if key is not None:
+                if key not in seen_in_block:
+                    output.append(format_setting(key, block_settings[key]))
+                    seen_in_block.add(key)
+                continue
+
+        output.append(line)
+
+    if block_settings and not found_lsphp:
+        raise RuntimeError(f"No 'extProcessor lsphp{{' block found in {OLS_CONF}")
+    if workers is not None and not workers_set:
+        output.insert(0, f"httpdWorkers {workers}\n")
+
+    OLS_CONF.write_text("".join(output))
+
+
 def main() -> None:
     # Ensure no stale .env file exists in webroot
     (ROOT_DIR / ".env").unlink(missing_ok=True)
 
+    tune_ols()
     inject_ols_env()
 
     # Configure .htaccess rules

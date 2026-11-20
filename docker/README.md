@@ -82,6 +82,23 @@ The container discovers the LiteSpeed PHP version in the runtime image and write
 
 In Kubernetes, an `envFrom.secretRef` Secret must have a key named `PHP_INI_SETTINGS` containing the newline-separated directives (for example, create it with `kubectl create secret generic php-ini --from-file=PHP_INI_SETTINGS=./settings.ini`). A Secret mounted as a file does not automatically become this environment variable. Restart the pod after changing the Secret; environment variables are not updated in running pods. Avoid overriding `PHP_INI_SCAN_DIR`, which can exclude the default scanned directory.
 
+### OpenLiteSpeed tuning
+
+These optional variables are written into `httpd_config.conf` at startup. Unset variables leave the base image's values unchanged; invalid values stop startup.
+
+| Variable | Sets | Notes |
+| --- | --- | --- |
+| `OLS_HTTPD_WORKERS` | `httpdWorkers` (server level) | OpenLiteSpeed otherwise sizes this from the node's CPU count, not the container's CPU limit. Each worker keeps its own connection pool to lsphp, so several workers can hold more connections than there are PHP children ("No request delivery notification has been received from LSAPI application"). Use `1` for pods with a CPU limit of about 2 cores or less. |
+| `OLS_PHP_CHILDREN` | lsphp `maxConns` and `PHP_LSAPI_CHILDREN` | Both are always set to the same value. Setting `PHP_LSAPI_CHILDREN` directly in the container has no effect, because lsphp gets its environment from `httpd_config.conf`. |
+| `OLS_PHP_KEEPALIVE_TIMEOUT` | lsphp `pcKeepAliveTimeout` (seconds) | How long an idle connection keeps a PHP child reserved. |
+
+```yaml
+environment:
+  OLS_HTTPD_WORKERS: "1"
+  OLS_PHP_CHILDREN: "10"
+  OLS_PHP_KEEPALIVE_TIMEOUT: "5"
+```
+
 ## Multisite
 
 Multisite is optional. Add these settings to the `municipio` service to enable a subdomain network:

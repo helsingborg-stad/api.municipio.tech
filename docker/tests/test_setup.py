@@ -149,6 +149,62 @@ class OpenLiteSpeedEnvironmentTests(unittest.TestCase):
 
 
 class HtaccessSetupTests(unittest.TestCase):
+    def test_ols_tuning_sets_workers_children_and_keepalive(self):
+        with tempfile.TemporaryDirectory() as directory:
+            config = Path(directory) / "httpd_config.conf"
+            config.write_text(
+                "serverName lsws\n"
+                "extProcessor lsphp{\n"
+                "    type lsapi\n"
+                "    maxConns 35\n"
+                "    env PHP_LSAPI_CHILDREN=35\n"
+                "    pcKeepAliveTimeout\n"
+                "}\n"
+                "extProcessor lsphp74{\n"
+                "    maxConns 5\n"
+                "}\n"
+            )
+            environment = {
+                "OLS_HTTPD_WORKERS": "1",
+                "OLS_PHP_CHILDREN": "10",
+                "OLS_PHP_KEEPALIVE_TIMEOUT": "5",
+            }
+            with patch.dict(os.environ, environment, clear=True), \
+                 patch.object(setup, "OLS_CONF", config):
+                setup.tune_ols()
+                setup.tune_ols()  # idempotent across container restarts
+
+            self.assertEqual(
+                config.read_text(),
+                "httpdWorkers 1\n"
+                "serverName lsws\n"
+                "extProcessor lsphp{\n"
+                "    type lsapi\n"
+                "    maxConns 10\n"
+                "    env PHP_LSAPI_CHILDREN=10\n"
+                "    pcKeepAliveTimeout 5\n"
+                "}\n"
+                "extProcessor lsphp74{\n"
+                "    maxConns 5\n"
+                "}\n",
+            )
+
+    def test_ols_tuning_is_skipped_when_unset_and_rejects_invalid_values(self):
+        with tempfile.TemporaryDirectory() as directory:
+            config = Path(directory) / "httpd_config.conf"
+            original = "extProcessor lsphp{\n    maxConns 10\n}\n"
+            config.write_text(original)
+            with patch.dict(os.environ, {}, clear=True), \
+                 patch.object(setup, "OLS_CONF", config):
+                setup.tune_ols()
+            self.assertEqual(config.read_text(), original)
+
+            for value in ("0", "-1", "two"):
+                with patch.dict(os.environ, {"OLS_HTTPD_WORKERS": value}, clear=True), \
+                     patch.object(setup, "OLS_CONF", config):
+                    with self.assertRaises(ValueError):
+                        setup.tune_ols()
+
     def test_missing_file_uses_selected_template_and_cache_rules(self):
         cases = [
             ({}, ".htaccess", False),
