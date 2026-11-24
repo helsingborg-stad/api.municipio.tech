@@ -17,7 +17,7 @@ env:
 
 jobs:
   prepare:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     outputs:
       eligible: ${{ steps.context.outputs.eligible }}
       version: ${{ steps.context.outputs.version }}
@@ -67,22 +67,25 @@ jobs:
     if: needs.prepare.outputs.eligible == 'true'
     name: Build ${{ matrix.platform }}
     runs-on: ${{ matrix.runner }}
+    # A cold build takes a few minutes; a stalled package mirror must fail the
+    # job instead of holding it for GitHub's 6-hour default.
+    timeout-minutes: 30
     strategy:
       fail-fast: true
       matrix:
         include:
           - platform: linux/amd64
-            runner: ubuntu-latest
+            runner: ubuntu-26.04
           - platform: linux/arm64
             runner: ubuntu-24.04-arm
     steps:
       - name: Check out release pull request head
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: ${{ needs.prepare.outputs.head_sha }}
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v4
@@ -97,6 +100,14 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Set platform slug
+        env:
+          PLATFORM: ${{ matrix.platform }}
+        run: echo "platform_slug=${PLATFORM//\//-}" >> "$GITHUB_ENV"
+
+      # docker/Dockerfile extends the pinned official OpenLiteSpeed image and
+      # builds Municipio into one image. The cache saves the app build and
+      # Municipio-specific server configuration.
       - name: Build and push image
         id: build
         uses: docker/build-push-action@v7
@@ -115,18 +126,18 @@ jobs:
             municipio-se.run=${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           secrets: |
             "acf_pro_key=${{ secrets.ACF_PRO_KEY }}"
+          cache-from: type=gha,scope=municipio-${{ env.platform_slug }}
+          cache-to: type=gha,mode=min,scope=municipio-${{ env.platform_slug }}
 
       - name: Export image digest
         env:
           DIGEST: ${{ steps.build.outputs.digest }}
-          PLATFORM: ${{ matrix.platform }}
         run: |
           mkdir -p "$RUNNER_TEMP/digests"
           touch "$RUNNER_TEMP/digests/${DIGEST#sha256:}"
-          echo "platform_slug=${PLATFORM//\//-}" >> "$GITHUB_ENV"
 
       - name: Upload image digest
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: digest-${{ env.platform_slug }}
           path: ${{ runner.temp }}/digests/*
@@ -135,17 +146,17 @@ jobs:
 
   publish:
     needs: [prepare, build]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - name: Download image digests
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           path: ${{ runner.temp }}/digests
           pattern: digest-*
           merge-multiple: true
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       - name: Log in to GHCR
         uses: docker/login-action@v4
