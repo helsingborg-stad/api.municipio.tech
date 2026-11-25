@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "07a94b056717b438d022f82e183e861e",
+    "content-hash": "eddbd46b359c384a6767acf31043c8e4",
     "packages": [
         {
             "name": "adbario/php-dot-notation",
@@ -2352,16 +2352,16 @@
         },
         {
             "name": "helsingborg-stad/api-sponsor-manager",
-            "version": "1.0.8",
+            "version": "1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/helsingborg-stad/api-sponsor-manager.git",
-                "reference": "f56519f89295077ea97cce291d9d0ee66c4cd0ac"
+                "reference": "c75f097af139e4ce683c650f66c0d5dce06c8575"
             },
             "dist": {
                 "type": "zip",
                 "url": "https://github.com/helsingborg-stad/api-sponsor-manager/releases/download/%prettyVersion%/api-sponsor-manager-%prettyVersion%.zip",
-                "reference": "f56519f89295077ea97cce291d9d0ee66c4cd0ac"
+                "reference": "c75f097af139e4ce683c650f66c0d5dce06c8575"
             },
             "require": {
                 "helsingborg-stad/acf-export-manager": "^1.0",
@@ -2399,10 +2399,10 @@
             "description": "Manages looking for sponsor listnings.",
             "support": {
                 "issues": "https://github.com/helsingborg-stad/api-sponsor-manager/issues",
-                "source": "https://github.com/helsingborg-stad/api-sponsor-manager/tree/1.0.8"
+                "source": "https://github.com/helsingborg-stad/api-sponsor-manager/tree/1.1.0"
             },
-            "time": "2026-11-17T10:31:51+00:00",
-            "published-time": "2026-11-17T10:32:36+00:00"
+            "time": "2026-11-19T14:56:03+00:00",
+            "published-time": "2026-11-19T14:56:48+00:00"
         },
         {
             "name": "helsingborg-stad/api-volunteer-manager",
