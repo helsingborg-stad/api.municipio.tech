@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "850b2467b9da100c4285b449e0131942",
+    "content-hash": "07a94b056717b438d022f82e183e861e",
     "packages": [
         {
             "name": "adbario/php-dot-notation",
@@ -268,16 +268,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.407.2",
+            "version": "3.407.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "aedc610bbd4c1fb4fe6fde7d3fbf9fb151d463dc"
+                "reference": "97f2a5570c4034ae59f0084baa81d9f3445f5469"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/aedc610bbd4c1fb4fe6fde7d3fbf9fb151d463dc",
-                "reference": "aedc610bbd4c1fb4fe6fde7d3fbf9fb151d463dc",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/97f2a5570c4034ae59f0084baa81d9f3445f5469",
+                "reference": "97f2a5570c4034ae59f0084baa81d9f3445f5469",
                 "shasum": ""
             },
             "require": {
@@ -359,10 +359,10 @@
             "support": {
                 "forum": "https://github.com/aws/aws-sdk-php/discussions",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.407.2"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.407.3"
             },
-            "time": "2026-11-23T20:14:00+00:00",
-            "published-time": "2026-11-23T20:21:37+00:00"
+            "time": "2026-11-24T19:05:05+00:00",
+            "published-time": "2026-11-24T19:12:51+00:00"
         },
         {
             "name": "brick/math",
@@ -2050,16 +2050,16 @@
         },
         {
             "name": "helsingborg-stad/api-alarm-manager",
-            "version": "2.5.1",
+            "version": "2.5.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/helsingborg-stad/api-alarm-manager.git",
-                "reference": "c717a6c1896574ef74e627d64a900404f2679a65"
+                "reference": "7eb19fa190142cdbec118145ab170f3e4d27c6af"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/helsingborg-stad/api-alarm-manager/zipball/c717a6c1896574ef74e627d64a900404f2679a65",
-                "reference": "c717a6c1896574ef74e627d64a900404f2679a65",
+                "url": "https://api.github.com/repos/helsingborg-stad/api-alarm-manager/zipball/7eb19fa190142cdbec118145ab170f3e4d27c6af",
+                "reference": "7eb19fa190142cdbec118145ab170f3e4d27c6af",
                 "shasum": ""
             },
             "require": {
@@ -2093,10 +2093,10 @@
             ],
             "support": {
                 "issues": "https://github.com/helsingborg-stad/api-alarm-manager/issues",
-                "source": "https://github.com/helsingborg-stad/api-alarm-manager/tree/2.5.1"
+                "source": "https://github.com/helsingborg-stad/api-alarm-manager/tree/2.5.3"
             },
-            "time": "2026-11-20T12:07:34+00:00",
-            "published-time": "2026-11-20T12:07:39+00:00"
+            "time": "2026-11-25T08:49:53+00:00",
+            "published-time": "2026-11-25T08:49:58+00:00"
         },
         {
             "name": "helsingborg-stad/api-event-manager",
@@ -4586,6 +4586,7 @@
                 "issues": "https://github.com/helsingborg-stad/Search-notices/issues",
                 "source": "https://github.com/helsingborg-stad/Search-notices/tree/3.0.6"
             },
+            "abandoned": true,
             "time": "2026-02-23T07:28:01+00:00",
             "published-time": "2026-02-23T07:28:05+00:00"
         },
@@ -10310,7 +10311,7 @@
                     "name": "PublishPress"
                 }
             ],
-            "description": "PublishPress Future can make scheduled changes to your content. You can unpublish posts, move posts to a new status, update the categories, and more.",
+            "description": "Schedule and automate changes to your WordPress posts. Unpublish, expire, change status or categories, and build workflows with multiple steps.",
             "homepage": "http://wordpress.org/extend/plugins/post-expirator/",
             "support": {
                 "changelog": "https://wordpress.org/plugins/post-expirator/#developers",
