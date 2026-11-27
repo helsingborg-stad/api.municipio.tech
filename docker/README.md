@@ -134,23 +134,6 @@ environment:
 
 They apply to web requests and to WP-CLI during container setup. Use `PHP_MEMORY_LIMIT` rather than `memory_limit` here; a `memory_limit` line, or any line that isn't `name=value`, stops startup. In Kubernetes, load a multi-line value from a Secret or ConfigMap key named `PHP_INI_SETTINGS` with `envFrom`. Restart the pod after changing it.
 
-### OpenLiteSpeed tuning
-
-These optional variables are written into `httpd_config.conf` at startup. Unset variables leave the base image's values unchanged; invalid values stop startup.
-
-| Variable | Sets | Notes |
-| --- | --- | --- |
-| `OLS_HTTPD_WORKERS` | `httpdWorkers` (server level) | OpenLiteSpeed otherwise sizes this from the node's CPU count, not the container's CPU limit. Each worker keeps its own connection pool to lsphp, so several workers can hold more connections than there are PHP children ("No request delivery notification has been received from LSAPI application"). Use `1` for pods with a CPU limit of about 2 cores or less. |
-| `OLS_PHP_CHILDREN` | lsphp `maxConns` and `PHP_LSAPI_CHILDREN` | Both are always set to the same value. Setting `PHP_LSAPI_CHILDREN` directly in the container has no effect, because lsphp gets its environment from `httpd_config.conf`. |
-| `OLS_PHP_KEEPALIVE_TIMEOUT` | lsphp `pcKeepAliveTimeout` (seconds) | How long an idle connection keeps a PHP child reserved. |
-
-```yaml
-environment:
-  OLS_HTTPD_WORKERS: "1"
-  OLS_PHP_CHILDREN: "10"
-  OLS_PHP_KEEPALIVE_TIMEOUT: "5"
-```
-
 ## Multisite
 
 Multisite is optional. Add these settings to the `municipio` service to enable a subdomain network:
@@ -226,7 +209,11 @@ writable by the site user (UID/GID `1000:1000`).
 
 The workflows in `municipio-deployment` publish to `ghcr.io/${{ github.repository }}`. Source release tags use plain `X.Y.Z` versions (for example `6.3.7`, without a leading `v`). A tag push builds the final multi-platform image directly from that source revision and publishes `vX.Y.Z`, `vX.Y`, `vX`, and `latest`; floating tags only move forward to newer versions.
 
-A release pull request must target the repository's default branch, come from a branch in that same repository, and have a title containing only `X.Y.Z`. Opening, updating, reopening, or retitling an eligible pull request builds its head commit as the multi-platform staging tag `vX.Y.Z-rc.RUN_NUMBER.RUN_ATTEMPT`. Final images are built independently from source tag pushes, not promoted or retagged from an RC.
+A release pull request must target the repository's default branch, come from a branch in that same repository, and have a title containing only `X.Y.Z`. Opening, updating, reopening, or retitling an eligible pull request builds its head commit as the multi-platform staging tag `vX.Y.Z-rc.N`, where `N` starts at `0` and increases with each build for that version. Final images are built independently from source tag pushes, not promoted or retagged from an RC.
+
+After a release publishes `vX.Y.Z`, the release workflow deletes that version's `vX.Y.Z-rc.N` images from GHCR, together with the untagged platform, attestation, and per-platform index manifests behind them ([docker/scripts/delete-ghcr-rc-versions.sh](scripts/delete-ghcr-rc-versions.sh)). Nothing the `vX.Y.Z` image uses is deleted, and an RC image that also carries another tag is skipped. To clean up versions released before this existed, run the **Delete container release candidates** workflow manually; it defaults to a dry run and refuses to run for a version without a `vX.Y.Z` image.
+
+Deleting package versions with `GITHUB_TOKEN` requires the repository to have the **Admin** role under the package's *Manage Actions access* settings. This is the default when the repository's workflow published the package first; otherwise the cleanup fails with HTTP 403.
 
 On the first release, the final-image workflow treats only GHCR's `404 NAME_UNKNOWN` response for the initial tag-list request as an empty package. Authentication failures, malformed responses, and other registry errors fail the workflow rather than being treated as an empty tag list.
 
